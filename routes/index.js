@@ -36,7 +36,7 @@ router.post(
   passport.authenticate("local", {
     successRedirect: "/main",
     failureRedirect: "/login",
-    failureFlash: true, // Optional: if using flash messages
+    // failureFlash: true,
   })
 );
 
@@ -53,18 +53,41 @@ router.get("/main", (req, res) => {
 router.get("/leaderboard", async (req, res) => {
   if (req.isAuthenticated()) {
     try {
-      const users = await User.find().sort({ score: -1 });
+      const users = await User.find({ score: { $gt: 0 } }).sort({ score: -1 });
       const scores = users.map((user) => ({
         username: user.username,
         score: user.score,
       }));
-      res.render("leaderboard", { username: req.user.username, scores });
+      res.render("leaderboard", { users });
     } catch (err) {
       console.error(err);
       res.status(500).send("Server error");
     }
   } else {
     res.redirect("/login");
+  }
+});
+
+// Route to update the user's score
+router.post("/update-score", async (req, res) => {
+  try {
+    const { score } = req.body;
+
+    // Find the currently logged-in user
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update the user's score
+    user.score = score;
+    await user.save();
+
+    res.json({ success: true, message: "Score updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

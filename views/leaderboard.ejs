@@ -14,7 +14,7 @@
   </head>
   <body>
     <header>
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <nav class="navbar bg-dark navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Navbar</a>
           <button
@@ -50,25 +50,26 @@
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">First</th>
-              <th scope="col">Last</th>
-              <th scope="col">Handle</th>
+              <th scope="col">Username</th>
+              <th scope="col">score</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <% users.forEach((user, index) => { %>
+              <tr>
+                <th scope="row"><%= index + 1 %></th>
+                <td><%= user.username %></td>
+                <td><%= user.score %></td>
+              </tr>
+            <% }); %>
+            <!-- <tr>
               <th scope="row">1</th>
               <td>Mark</td>
-              <td>Otto</td>
               <td>@mdo</td>
-            </tr>
+            </tr> -->
           </tbody>
         </table>
       </div>
-      </div>
-      <div id="ads">
-        <!-- Placeholder for ads -->
-        <p>Ads go here</p>
       </div>
     </main>
     <script
