@@ -81,7 +81,7 @@ router.post("/update-score", async (req, res) => {
     }
 
     // Update the user's score
-    user.score = score;
+    if (user.score < score) user.score = score;
     await user.save();
 
     res.json({ success: true, message: "Score updated successfully" });
