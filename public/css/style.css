@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* header {
+    background-color: #333;
+    padding: 10px;
+    color: white;
+} */
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+#game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    margin: 20px 0;
+}
+
+aside {
+    width: 200px;
+    margin-left: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+}
+
+#ads {
+    text-align: center;
+    
+}
