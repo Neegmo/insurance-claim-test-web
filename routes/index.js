@@ -7,6 +7,21 @@ const ClaimForm = require("../models/ClaimForm"); // Claim form model
 
 const router = express.Router();
 
+// Redirect root to the main page
+router.get("/", (req, res) => {
+  res.redirect("/main");
+});
+
+router.get("/main", async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.render("main", { users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
 // Route for user registration
 router.post("/register", async (req, res) => {
   const { username, email, password, isAdmin } = req.body;
