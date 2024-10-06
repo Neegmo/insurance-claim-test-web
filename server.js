@@ -5,7 +5,7 @@ const passport = require("passport");
 require("./config/passport")(passport);
 const dotenv = require("dotenv");
 const path = require("path");
-const User = require("./models/User"); // Ensure User model is required
+const User = require("./models/User");
 
 dotenv.config();
 
@@ -19,10 +19,10 @@ const session = require("express-session");
 // Session middleware
 app.use(
   session({
-    secret: process.env.SECRET_OR_KEY, // Use the same secret key
+    secret: process.env.SECRET_OR_KEY,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Set to true if using https
+    cookie: { secure: false },
   })
 );
 
@@ -52,7 +52,6 @@ mongoose
 
 // Passport middleware
 app.use(passport.initialize());
-require("./config/passport")(passport);
 
 // Routes
 app.use("/", require("./routes/index"));

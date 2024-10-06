@@ -11,49 +11,56 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4035643721381565" crossorigin="anonymous"></script>
   </head>
   <body>
     <header>
-      <nav class="navbar bg-dark navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+      <nav class="navbar bg-dark navbar-expand-lg" data-bs-theme="dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Navbar</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/main" style="color: aliceblue">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/leaderboard">Leaderboard</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/logout">Logout</a>
-              </li>
-            </ul>
-          </div>
         </div>
       </nav>
     </header>
-    <main>
-      <div class="container">
-        <div id="game-container">
-          <!-- Placeholder for your Phaser.js game -->
-          <div id="app"></div>
+
+    <main class="container mt-5">
+      <!-- User creation form -->
+      <form action="/register" method="POST" class="d-flex gap-2 mb-3">
+        <input type="text" name="username" placeholder="Username" class="form-control" required />
+        <input type="email" name="email" placeholder="Email" class="form-control" required />
+        <input type="password" name="password" placeholder="Password" class="form-control" required />
+        <div class="form-check">
+          <input type="checkbox" name="isAdmin" class="form-check-input" id="isAdminCheck" />
+          <label class="form-check-label" for="isAdminCheck">Admin</label>
         </div>
-      </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
+
+      <!-- User list table -->
+      <table class="table table-striped mt-5">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Admin</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(user => { %>
+          <tr>
+            <td><%= user.username %></td>
+            <td><%= user.email %></td>
+            <td><%= user.isAdmin ? 'Yes' : 'No' %></td>
+            <td>
+              <form action="/delete/<%= user._id %>" method="POST">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
     </main>
-    <script src="/Assets/index.f2230b9b.js"></script>
+
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
