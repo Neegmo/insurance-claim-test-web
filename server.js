@@ -5,7 +5,7 @@ const passport = require("passport");
 require("./config/passport")(passport);
 const dotenv = require("dotenv");
 const path = require("path");
-const User = require("./models/User");
+const cors = require("cors");
 
 dotenv.config();
 
@@ -31,6 +31,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

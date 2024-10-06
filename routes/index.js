@@ -1,21 +1,13 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
 const passport = require("passport");
-const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User"); // Importing the User model
+const ClaimForm = require("../models/ClaimForm"); // Claim form model
 
 const router = express.Router();
 
-// Redirect root to the main page
-router.get("/", (req, res) => {
-  res.redirect("/main");
-});
-
-// Render login page
-router.get("/login", (req, res) => {
-  res.render("login");
-});
-
-// Register new user
+// Route for user registration
 router.post("/register", async (req, res) => {
   const { username, email, password, isAdmin } = req.body;
   try {
@@ -30,52 +22,70 @@ router.post("/register", async (req, res) => {
     });
 
     await user.save();
-    res.redirect("/main");
+    res.status(201).json({ msg: "User registered successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 });
 
-// Login user
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/main",
-    failureRedirect: "/login",
-  })
-);
-
-// Render main page with user list
-router.get("/main", async (req, res) => {
+// Route for user login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const users = await User.find({});
-    res.render("main", { users });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+
+    const payload = { id: user._id, username: user.username, isAdmin: user.isAdmin };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.json({ token });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 });
 
-// Delete user
-router.post("/delete/:id", async (req, res) => {
+// Route to create claim form (restricted to authenticated users)
+router.post("/claim", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  const { formData } = req.body;
   try {
-    await User.findByIdAndDelete(req.params.id);
-    res.redirect("/main");
+    const newClaim = new ClaimForm({ formData, user: req.user._id });
+    await newClaim.save();
+    res.status(201).json({ msg: "Claim form submitted successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 });
 
-// Logout user
-router.get("/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-    res.redirect("/login");
-  });
+// Route to retrieve claim forms (restricted to admins)
+router.get("/claim", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  if (!req.user.isAdmin) return res.status(403).json({ msg: "Access denied" });
+
+  try {
+    const claims = await ClaimForm.find().populate("user", "username email");
+    res.json(claims);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// Route to delete claim form (restricted to admins)
+router.delete("/claim/:id", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  if (!req.user.isAdmin) return res.status(403).json({ msg: "Access denied" });
+
+  try {
+    await ClaimForm.findByIdAndDelete(req.params.id);
+    res.json({ msg: "Claim form deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 });
 
 module.exports = router;
