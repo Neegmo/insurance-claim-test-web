@@ -37,7 +37,7 @@ router.post("/register", async (req, res) => {
     });
 
     await user.save();
-    res.status(201).json({ msg: "User registered successfully" });
+    res.redirect("/main");
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
